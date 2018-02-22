@@ -1,0 +1,18 @@
+The file bash_aliases contains:
+alias pgadmin='open $HOME/Applications/pgAdmin3.app'
+
+
+The file brew_packages_skip contains:
+#!/usr/bin/env bash
+
+# brew installer helper, normally run this from 'dot'
+# http://postgresapp.com/documentation/gui-tools.html
+TMPPATH=$PATH
+PATH=/usr/local/bin:$PATH
+
+brew install postgres
+brew install freetds
+brew cask install pgadmin3
+
+export PATH=$TMPPATH
+

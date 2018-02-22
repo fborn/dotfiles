@@ -1,3 +1,17 @@
+The file brew_packages contains:
+#!/usr/bin/env bash
+
+# brew installer helper, normally run this from 'dot'
+# check: http://docs.python-guide.org/en/latest/starting/install/osx/
+TMPPATH=$PATH
+PATH=/usr/local/bin:$PATH
+
+brew install tmux || brew upgrade tmux
+brew install reattach-to-user-namespace || brew upgrade reattach-to-user-namespace
+
+export PATH=$TMPPATH
+
+The file tmux.conf.symlink contains:
 # change prefix to Ctrl-a (like in gnu-screen)
 unbind C-b
 set-option -g prefix C-a
@@ -79,5 +93,6 @@ set -g status-right "#[fg=green]#H"
 setw -g monitor-activity on
 set -g visual-activity on
 
-setw -g aggressive-resize off
+setw -g aggressive-resize on
+
 

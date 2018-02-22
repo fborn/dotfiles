@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-source `brew --repository`/Library/Contributions/brew_bash_completion.sh
+source `brew --prefix`/etc/bash_completion.d/brew
+#/usr/local/Homebrew/completions/bash/brew

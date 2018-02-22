@@ -1,0 +1,3 @@
+The file brew_package contains:
+brew install Caskroom/cask/slack
+

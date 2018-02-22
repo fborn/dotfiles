@@ -1,0 +1,65 @@
+The file bash_aliases contains:
+#!/usr/bin/env bash
+
+workon () { source $WORKON_DIR/$1/bin/activate ; }
+alias wo="workon"
+
+function deactivate {
+    local venv=basename $VIRTUAL_ENV
+    export PS1=echo PS1 | sed "s/($venv)//"
+    export PATH=${PATH#$VIRTUAL_ENV}
+    unset VIRTUAL_ENV
+}    
+
+mkenv () { virtualenv --no-site-packages $WORKON_DIR/$1 ; }
+
+showenv () { ls $WORKON_DIR ; }
+alias se="showenv"
+
+The file bash_completion contains:
+#!/usr/bin/env bash
+
+complete -o "nospace" -W "python" killall;
+
+The file bash_env contains:
+#!/usr/bin/env bash
+
+export WORKON_DIR=~/.virtualenv
+
+# need this for python compilation
+export ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future
+
+The file brew_packages contains:
+#!/usr/bin/env bash
+
+# brew installer helper, normally run this from 'dot'
+# check: http://docs.python-guide.org/en/latest/starting/install/osx/
+TMPPATH=$PATH
+PATH=/usr/local/bin:$PATH
+
+brew install python || brew upgrade python
+brew install ansible || brew upgrade ansible
+
+# NB: this installs under they regular python interpreter
+sud easy_install pip
+sudo pip install --upgrade setuptools
+sudo pip install --upgrade pip
+
+brew linkapps python
+
+export PATH=$TMPPATH
+
+The file install.sh contains:
+#!/usr/bin/env bash
+
+source "$(dirname "$0")/bash_env"
+
+if [ ! -d $WORKON_DIR ] ; then
+    echo "  Creating an empty Virtual env directory"
+    mkdir $WORKON_DIR
+fi
+
+
+sudo pip install virtualenv
+sudo pip install evernote
+
