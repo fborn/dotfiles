@@ -4,6 +4,8 @@ export DOTFILES=$HOME/.dotfiles
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
+#. $DOTFILES/bin/start-ssh-agent
+
 red='\[\e[0;31m\]'
 # RED='\[\e[1;31m\]'
 # green='\[\e[0;32m\]'
@@ -17,7 +19,7 @@ yellow='\[\e[0;33m\]'
 reset='\[\e[0m\]'
 
 parse_git_branch(){ git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'; }
-export PS1="\u[${yellow}\w${reset}]${red}\$(parse_git_branch)${reset}$ "
+export PS1="\u[${yellow}\W${reset}]${red}\$(parse_git_branch)${reset}$ "
 #export PS1="${red}\u@\h:${yellow}\W${red}$(parse_git_branch)${reset}$ "
 
 export PAGER=`which less`
@@ -46,9 +48,23 @@ set -o ignoreeof
 
 REMOTE_PROMPT="\e[0;31m[\u@\h \W]\$ \e[m "
 
+path_munge() {
+    if [ -d "$1" ]; then
+        PATH=${PATH//":$1:"/:} #delete all instances in the middle
+        PATH=${PATH/%":$1"/} #delete any instance at the end
+        PATH=${PATH/#"$1:"/} #delete any instance at the beginning
+        if [ "$2" = "after" ] ; then
+            PATH=$PATH:$1
+        else
+            PATH=$1:$PATH
+        fi
+    fi
+}
+
 # set path, make /usr/local/bin preference
-export PATH=`echo ":$PATH:" | sed -e "s#:/usr/local/bin:#:#g" -e "s/^://" -e "s/:$//"`
-export PATH=$DOTFILES/bin:/usr/local/bin:$PATH
+# export PATH=`echo ":$PATH:" | sed -e "s#:/usr/local/bin:#:#g" -e "s/^://" -e "s/:$//"`
+# export PATH=$DOTFILES/bin:/usr/local/bin:$PATH
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 
 source_files () {
     local alias_file
@@ -65,6 +81,18 @@ fi
 
 source_files "bash_aliases"
 source_files "bash_env"
+
+path_munge "/usr/local/bin"
+path_munge "$DOTFILES/bin"
+
+ssh-add -A 2>/dev/null;
+
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+. $(brew --prefix)/etc/bash_completion
+fi
+
 source_files "bash_completion"
 
 unset source_files
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
